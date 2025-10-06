@@ -16,8 +16,15 @@ def decode_review(encoded_review):
 
 def preprocess_text(text):
   words = text.lower().split()
-  encoded_review = [word_index.get(word, 2) + 3 for word in words]
-  padded_review = sequence.pad_sequences([encoded_review], maxlen = 500)
+  encoded_review = []
+  for word in words:
+    idx = word_index.get(word, 2) + 3
+    # Only allow indices in [0, 9999], else use 2 (unknown)
+    if idx < 10000:
+      encoded_review.append(idx)
+    else:
+      encoded_review.append(2)
+  padded_review = sequence.pad_sequences([encoded_review], maxlen=500)
   return padded_review
 
 # Prediction function
@@ -48,4 +55,5 @@ if st.button('Classify'):
     st.write(f'Sentiment: {sentiment}')
     st.write(f'Prediction Score: {prediction[0][0]}')
 else:
+  st.write('Please enter a movie review.')
   st.write('Please enter a movie review.')
